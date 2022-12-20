@@ -1,19 +1,16 @@
 // ==UserScript==
-// @name         批量删除新浪微博博文
-// @namespace    https://github.com/dxhuii/delWeibo
+// @name         delwb
+// @namespace    https://github.com/babybluue/delWeibo
 // @version      1.1.3
 // @author       plain
 // @description  批量删除新浪微博
 // @license      MIT
 // @icon         https://weibo.com/favicon.ico
-// @match        *://weibo.com/*/profile?*
 // @match        *://weibo.com/u/*
-// @match        *://weibo.com/fav*
-// @match        *://weibo.com/u/page/fav/*
 // @require      https://cdn.jsdelivr.net/npm/vue@3.2.45/dist/vue.global.prod.js
 // ==/UserScript==
 
-(o=>{const e=document.createElement("style");e.dataset.source="vite-plugin-monkey",e.innerText=o,document.head.appendChild(e)})(".del-weibo[data-v-1534c272]{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9999999;background-color:#ff8200;color:#fff;padding:6px 16px;border:none;border-radius:100px 0 0 100px;cursor:pointer}.del-weibo-end[data-v-1534c272]{background-color:#ff84007a}");
+(o=>{const e=document.createElement("style");e.dataset.source="vite-plugin-monkey",e.innerText=o,document.head.appendChild(e)})(".del-weibo[data-v-ecba8d6e]{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9999999;background-color:#ff8200;color:#fff;padding:6px 16px;border:none;border-radius:100px 0 0 100px;cursor:pointer}.del-weibo-end[data-v-ecba8d6e]{background-color:#ff84007a}");
 
 (function(vue) {
   "use strict";
@@ -31,72 +28,46 @@
       function $$(elem, el) {
         return $(elem).querySelectorAll(el)[1];
       }
+      const blog = ".vue-recycle-scroller__item-view";
       function del() {
-        const url = window.location.href;
         for (let i = 0; i < 1e3; i++) {
           setTimeout(function() {
-            if (url.indexOf("//weibo.com/u/page/fav/") !== -1) {
+            const article = $(blog);
+            const articleH = article.clientHeight;
+            const height = window.scrollY;
+            const isRetweet = article.querySelector(".Feed_retweet_JqZJb");
+            if (!isRetweet) {
+              article.remove();
+              window.scrollTo({
+                top: height + articleH,
+                behavior: "smooth"
+              });
+              count.value + 1;
+              return;
+            }
+            if ($('i[title="\u66F4\u591A"]')) {
               if ($('i[title="\u66F4\u591A"]')) {
                 $('i[title="\u66F4\u591A"]').click();
-                $All(".woo-pop-item-main")[0].click();
-                if ($(".woo-dialog-ctrl")) {
-                  $$(".woo-dialog-ctrl", ".woo-button-main").click();
-                }
-                i > 5 && window.location.reload();
               }
-            }
-            if (url.indexOf("/profile") !== -1) {
-              if ($('a[action-type="fl_menu"]')) {
-                $('a[action-type="fl_menu"]').click();
-                $('a[title="\u5220\u9664\u6B64\u6761\u5FAE\u535A"]').click();
-                $('a[action-type="ok"]').click();
-                $('a[title="\u53D6\u6D88\u5FEB\u8F6C"]').click();
-              }
-            }
-            if (url.indexOf("//weibo.com/fav") !== -1) {
-              if ($('a[action-type="fl_favorite"]')) {
-                $('a[action-type="fl_favorite"]').click();
-                $('a[action-type="ok"]').click();
-              }
-            }
-            if (url.indexOf("//weibo.com/u/") !== -1) {
-              if ($(".vue-recycle-scroller__item-view .deletedToolbar_toolbarFull_1dOfW span")) {
-                $(".deletedToolbar_toolbarFull_1dOfW span").click();
-                $(".vue-recycle-scroller__item-view .deletedToolbar_toolbarFull_1dOfW").remove();
-              } else {
-                if ($('i[title="\u66F4\u591A"]') || $('i[title="\u8D1F\u53CD\u9988"]')) {
-                  if ($('i[title="\u66F4\u591A"]')) {
-                    $('i[title="\u66F4\u591A"]').click();
-                  }
-                  if ($('i[title="\u8D1F\u53CD\u9988"]')) {
-                    $('i[title="\u8D1F\u53CD\u9988"]').click();
-                  }
-                  const item = $All(".woo-pop-item-main");
-                  if (item.length) {
-                    if (item.length > 3) {
-                      item.forEach((item2) => item2.innerText === "\u5220\u9664" && item2.click());
-                      count.value = 0;
-                    } else {
-                      item.forEach((item2) => item2.innerText === "\u53D6\u6D88\u5FEB\u8F6C" && item2.click());
-                      setTimeout(() => {
-                        count.value = 1;
-                      }, 1e3);
-                    }
-                  }
-                  $(".woo-dialog-ctrl") && $$(".woo-dialog-ctrl", ".woo-button-main").click();
-                  if ($(".deletedToolbar_toolbarFull_1dOfW")) {
-                    $(".deletedToolbar_toolbarFull_1dOfW").click();
-                  }
-                  if (count.value) {
-                    count.value = 0;
-                    setTimeout(() => {
-                      window.location.reload();
-                    }, 1e3);
-                  }
-                  i > 160 && window.location.reload();
+              const item = $All(".woo-pop-item-main");
+              if (item.length) {
+                if (item.length > 3) {
+                  item.forEach((item2) => item2.innerText === "\u5220\u9664" && item2.click());
+                } else {
+                  item.forEach(
+                    (item2) => item2.innerText === "\u53D6\u6D88\u5FEB\u8F6C" && item2.click()
+                  );
                 }
               }
+              $(".woo-dialog-ctrl") && $$(".woo-dialog-ctrl", ".woo-button-main").click();
+              if ($(".deletedToolbar_toolbarFull_1dOfW")) {
+                $(".deletedToolbar_toolbarFull_1dOfW").click();
+              }
             }
+            window.scrollTo({
+              top: height + 100
+            });
+            count.value > 15 && window.location.reload();
           }, 1e3 * i);
         }
       }
@@ -112,7 +83,7 @@
         start.value = 0;
         window.location.reload();
       };
-      vue.watchEffect(() => {
+      vue.onMounted(() => {
         if (localStorage.delWeibo === "start") {
           del();
           start.value = 1;
@@ -123,7 +94,7 @@
           key: 0,
           class: vue.normalizeClass(["del-weibo", { "del-weibo-end": start.value }]),
           onClick: onEnd
-        }, "\u7ED3\u675F", 2)) : (vue.openBlock(), vue.createElementBlock("button", {
+        }, " \u7ED3\u675F ", 2)) : (vue.openBlock(), vue.createElementBlock("button", {
           key: 1,
           class: "del-weibo",
           onClick: onStart
@@ -131,7 +102,7 @@
       };
     }
   });
-  const DelWeibo_vue_vue_type_style_index_0_scoped_1534c272_lang = "";
+  const DelWeibo_vue_vue_type_style_index_0_scoped_ecba8d6e_lang = "";
   const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;
     for (const [key, val] of props) {
@@ -139,7 +110,7 @@
     }
     return target;
   };
-  const DelWeibo = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-1534c272"]]);
+  const DelWeibo = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-ecba8d6e"]]);
   const _sfc_main = /* @__PURE__ */ vue.defineComponent({
     __name: "App",
     setup(__props) {
