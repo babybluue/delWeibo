@@ -9,19 +9,18 @@ export default defineConfig({
     monkey({
       entry: 'src/main.ts',
       userscript: {
-        name: '批量删除新浪微博博文',
         icon: 'https://weibo.com/favicon.ico',
-        namespace: 'https://github.com/dxhuii/delWeibo',
+        namespace: 'https://github.com/babybluue/delWeibo',
         author: 'plain',
         description: '批量删除新浪微博',
-        match: ['*://weibo.com/*/profile?*', '*://weibo.com/u/*', '*://weibo.com/fav*', '*://weibo.com/u/page/fav/*'],
-        license: 'MIT'
+        match: ['*://weibo.com/u/*'],
+        license: 'MIT',
       },
       build: {
         externalGlobals: {
-          vue: cdn.jsdelivr('Vue', 'dist/vue.global.prod.js')
-        }
-      }
-    })
-  ]
+          vue: cdn.jsdelivr('Vue', 'dist/vue.global.prod.js'),
+        },
+      },
+    }),
+  ],
 })
